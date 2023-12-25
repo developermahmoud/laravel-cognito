@@ -11,4 +11,7 @@ Route::group(['prefix' => 'auth'], function () {
         Route::post('confirm', [AuthController::class, 'confirmSignUp']);
         Route::post('resend-confirmation-code', [AuthController::class, 'resendConfirmationCode']);
     });
+
+    Route::post('sign-in', [AuthController::class, 'signIn']);
+    Route::get('user', [AuthController::class, 'user'])->middleware('cognito');
 });

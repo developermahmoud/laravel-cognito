@@ -31,6 +31,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
     'cognito' => [
+        'region' => env('AWS_DEFAULT_REGION'),
         'client_id' => env('COGNITO_CLIENT_ID'),
     ],
 ];

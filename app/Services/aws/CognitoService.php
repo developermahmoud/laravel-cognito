@@ -15,7 +15,7 @@ class CognitoService implements AuthProviderInterface
     {
         $this->client = new CognitoIdentityProviderClient([
             'credentials' => CredentialProvider::env(),
-            'region'      => 'eu-central-1',
+            'region'      => config('services.cognito.region'),
         ]);
 
         $this->clientID = config('services.cognito.client_id');
@@ -56,6 +56,25 @@ class CognitoService implements AuthProviderInterface
         $this->client->resendConfirmationCode([
             'ClientId'         => $this->clientID,
             'Username'         => $username
+        ]);
+    }
+
+    public function initiateAuth(string $username, string $password)
+    {
+        return $this->client->initiateAuth([
+            'AuthFlow' => 'USER_PASSWORD_AUTH',
+            'AuthParameters' => [
+                'USERNAME' => $username,
+                'PASSWORD' => $password,
+            ],
+            'ClientId' => $this->clientID,
+        ]);
+    }
+
+    public function getUser(string $accessToken)
+    {
+        return $this->client->getUser([
+            'AccessToken' => $accessToken,
         ]);
     }
 }

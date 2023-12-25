@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\v1\Auth\ConfirmSignUp;
 use App\Http\Requests\Api\v1\Auth\ResendConfirmationCodeRequest;
+use App\Http\Requests\Api\v1\Auth\SignInRequest;
 use App\Http\Requests\Api\v1\Auth\SignUpRequest;
+use App\Http\Resources\Api\v1\Auth\UserResource;
 use App\Interfaces\AuthProviderInterface;
 use App\Services\aws\CognitoService;
 use Exception;
@@ -17,7 +19,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        // Here you can init any auth service if you need
+        // Here you can init any auth service as you need
         $this->authService = new CognitoService();
     }
 
@@ -51,6 +53,32 @@ class AuthController extends Controller
             return $this->responseOk(
                 "confirmation code sent successfully",
                 $this->authService->resendConfirmationCode($request->username),
+            );
+        } catch (Exception $e) {
+            return $this->responseError($e);
+        }
+    }
+
+    public function signIn(SignInRequest $request)
+    {
+        try {
+            $result = $this->authService->initiateAuth($request->username, $request->password);
+
+            return $this->responseOk(
+                "user logged in successfully",
+                $result->get('AuthenticationResult'),
+            );
+        } catch (Exception $e) {
+            return $this->responseError($e);
+        }
+    }
+
+    public function user()
+    {
+        try {
+            return $this->responseOk(
+                "user",
+                new UserResource(request()->user),
             );
         } catch (Exception $e) {
             return $this->responseError($e);
