@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use App\Services\aws\CognitoService;
 use App\Traits\ApiHttpResponseTrait;
 use Closure;
@@ -43,11 +44,15 @@ class CognitoAuthMiddleware
             return $this->responseError($e);
         }
 
-
         /**
-         * Set user to request
+         * Set cognito user to request
          */
         $request->merge(['user' => $result->get('UserAttributes')]);
+
+        /**
+         * Set DB user to request
+         */
+        $request->merge(['user_id' => (User::select('id')->where('cognito_sub', $result->get('UserAttributes')[0]['Value'])->first())?->id]);
 
         return $next($request);
     }

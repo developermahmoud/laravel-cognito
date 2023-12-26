@@ -10,6 +10,7 @@ use App\Http\Requests\Api\v1\Auth\SignUpRequest;
 use App\Http\Resources\Api\v1\Auth\UserResource;
 use App\Interfaces\AuthProviderInterface;
 use App\Services\aws\CognitoService;
+use App\Services\UserService;
 use Exception;
 
 class AuthController extends Controller
@@ -17,7 +18,7 @@ class AuthController extends Controller
 
     private AuthProviderInterface $authService;
 
-    public function __construct()
+    public function __construct(private readonly UserService $userService)
     {
         // Here you can init any auth service as you need
         $this->authService = new CognitoService();
@@ -26,9 +27,19 @@ class AuthController extends Controller
     public function signUp(SignUpRequest $request)
     {
         try {
+            /**
+             * Add user to cognito
+             */
+            $cognito_sub = $this->authService->signUp($request->all());
+
+            /**
+             * add user to our DB
+             */
+            $this->userService->store($request->email, $cognito_sub);
+
             return $this->responseOk(
                 "user created successfully",
-                $this->authService->signUp($request->all()),
+                $cognito_sub,
             );
         } catch (Exception $e) {
             return $this->responseError($e);
