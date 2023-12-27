@@ -20,6 +20,10 @@ class UserResource extends JsonResource
             $attr[str_replace("custom:", "", $attribute['Name'])] = $attribute['Value'];
         }
 
+        $attr['user_id']     = request()->user_id;
+        $attr['roles']       = request()->roles;
+        $attr['permissions'] = request()->permissions;
+       
         return $attr;
     }
 }

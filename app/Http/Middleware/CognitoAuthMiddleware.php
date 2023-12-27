@@ -52,7 +52,10 @@ class CognitoAuthMiddleware
         /**
          * Set DB user to request
          */
-        $request->merge(['user_id' => (User::select('id')->where('cognito_sub', $result->get('UserAttributes')[0]['Value'])->first())?->id]);
+        $user = User::select('id')->with(['roles', 'permissions'])->where('cognito_sub', $result->get('UserAttributes')[0]['Value'])->first();
+        $request->merge(['user_id'     => $user?->id]);
+        $request->merge(['roles'       => $user?->roles?->pluck('name')]);
+        $request->merge(['permissions' => $user?->permissions?->pluck('name')]);
 
         return $next($request);
     }

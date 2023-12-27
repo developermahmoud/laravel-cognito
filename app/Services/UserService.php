@@ -12,9 +12,11 @@ class UserService
 
     public function store(string $email, string $cognito_sub)
     {
-        $this->user->create([
+        $user = $this->user->create([
             'email'       => $email,
             'cognito_sub' => $cognito_sub,
         ]);
+
+        $user->assignRole('client');
     }
 }

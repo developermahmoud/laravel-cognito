@@ -38,7 +38,7 @@ class AuthController extends Controller
             $this->userService->store($request->email, $cognito_sub);
 
             return $this->responseOk(
-                "user created successfully",
+                __("user created successfully"),
                 $cognito_sub,
             );
         } catch (Exception $e) {
@@ -50,7 +50,7 @@ class AuthController extends Controller
     {
         try {
             return $this->responseOk(
-                "email verified successfully",
+                __("email verified successfully"),
                 $this->authService->confirmSignUp($request->username, $request->code),
             );
         } catch (Exception $e) {
@@ -62,7 +62,7 @@ class AuthController extends Controller
     {
         try {
             return $this->responseOk(
-                "confirmation code sent successfully",
+                __("confirmation code sent successfully"),
                 $this->authService->resendConfirmationCode($request->username),
             );
         } catch (Exception $e) {
@@ -76,7 +76,7 @@ class AuthController extends Controller
             $result = $this->authService->initiateAuth($request->username, $request->password);
 
             return $this->responseOk(
-                "user logged in successfully",
+                __("user logged in successfully"),
                 $result->get('AuthenticationResult'),
             );
         } catch (Exception $e) {
@@ -88,7 +88,7 @@ class AuthController extends Controller
     {
         try {
             return $this->responseOk(
-                "user",
+                __("user"),
                 new UserResource(request()->user),
             );
         } catch (Exception $e) {
